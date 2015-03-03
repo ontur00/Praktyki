@@ -10,11 +10,12 @@ import java.util.logging.Logger;
  *
  * @author Radosław
  */
-public class MyRunChangeVariable implements Runnable {
+public class MyRunChangeVariable {
 
     private int[] tabInt;
     private Random random;
     private static int id;
+    private Object lock = new Object();
 
     public MyRunChangeVariable(int[] tabWsk) {
         id++;
@@ -26,36 +27,43 @@ public class MyRunChangeVariable implements Runnable {
         }
     }
 
-    @Override
-    public void run() {
-        synchronized (tabInt) {
-            while (true) {
-                long start = System.nanoTime();
-                increment(start);
-                decrement();
-            }
-        }
-    }
-
-    public synchronized void increment(long startTime) {
+//    @Override
+//    public void run() {
+//        synchronized (lock) {
+//            while (true) {
+//                long start = System.nanoTime();
+//                increment(start);
+//                decrement();
+//            }
+//        }
+//    }
+    public void increment(long startTime) throws InterruptedException {
         //increment
-        if (tabInt[0] == 0) {
-            tabInt[0] += 1;
-            //Sleep thread to Random time        
-            try {
+//        if (tabInt[0] == 0) {
+//            tabInt[0] += 1;
+//            //Sleep thread to Random time        
+//            try {
+//
+//                this.wait(random.nextInt(10000));
+//
+//            } catch (InterruptedException ex) {
+//                Logger.getLogger(MyRunChangeVariable.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//            this.notify();
+//        }
+        while (true) {
+            while (tabInt[0] == 0) {
+                tabInt[0] += 1;
+                Thread.sleep(random.nextInt(1000));
 
-                this.wait(random.nextInt(10000));
-
-            } catch (InterruptedException ex) {
-                Logger.getLogger(MyRunChangeVariable.class.getName()).log(Level.SEVERE, null, ex);
             }
-            this.notify();
         }
-        long end = System.nanoTime();
-        printIncrement(end - startTime);
+        
+        //long end = System.nanoTime();
+        //printIncrement(end - startTime);
     }
 
-    private  void decrement() {
+    private void decrement() {
         long start = 0;
 
         if (tabInt[0] == 1) {
