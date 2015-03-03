@@ -14,8 +14,9 @@ import java.util.logging.Logger;
  */
 public class testMain {
 
-    public static void main(String[] args) {
-        LowLevelSynchro lowLevelSyn = new LowLevelSynchro();
+    public static void main(String[] args) {           
+        
+        LowLevelSynchro lowLevelSyn = new LowLevelSynchro();        
         
         Thread t1 = new Thread(new Runnable() {
 
@@ -23,6 +24,7 @@ public class testMain {
             public void run() {
                 try {
                     lowLevelSyn.producer();
+          
                 } catch (InterruptedException ex) {
                     Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
                 }
