@@ -16,11 +16,13 @@ public class MyRunChangeVariable {
     private Random random;
     private static int id;
     private Object lock = new Object();
+    private long startTime;
+    private long endTime;
 
     public MyRunChangeVariable(int[] tabWsk) {
         id++;
         tabInt = tabWsk;
-        tabInt[0] = 0;
+        tabInt[0] = 1;
 
         if (random == null) {
             random = new Random(System.nanoTime());
@@ -51,31 +53,53 @@ public class MyRunChangeVariable {
 //            }
 //            this.notify();
 //        }
-        while (true) {
-            while (tabInt[0] == 0) {
-                tabInt[0] += 1;
-                Thread.sleep(random.nextInt(1000));
 
+        while (true) {
+            synchronized (lock) {
+                while (tabInt[0] == 0) {
+                    tabInt[0] = 1;
+//                    System.err.println("Watek " + id + " Increment ");                    
+                    startTime = System.nanoTime();
+                    lock.wait(random.nextInt(1000));
+//                    lock.wait();
+//                    Thread.sleep(random.nextInt(1000));
+                }
+
+                System.err.println("Increment "  + tabInt[0]);
+                lock.notify();
             }
         }
-        
+
         //long end = System.nanoTime();
         //printIncrement(end - startTime);
     }
 
-    private void decrement() {
+    public void decrement() throws InterruptedException {
         long start = 0;
 
-        if (tabInt[0] == 1) {
-            tabInt[0] = 0;
+//        if (tabInt[0] == 1) {
+//            tabInt[0] = 0;
+//
+//        }
+//
+//        long end = System.nanoTime();
+//        if ((end - start) < end) {
+//            printDecrement(end - start);
+//        } else {
+//            printDecrement(end);
+//        }
+        while (true) {
+            synchronized (lock) {
+                while (tabInt[0] == 1) {
+                    tabInt[0] = 0;
+                    endTime = System.nanoTime();
 
-        }
+                    lock.wait();
+                }
 
-        long end = System.nanoTime();
-        if ((end - start) < end) {
-            printDecrement(end - start);
-        } else {
-            printDecrement(end);
+                System.out.println("decrement " + tabInt[0]);
+                lock.notify();
+            }
         }
     }
 
